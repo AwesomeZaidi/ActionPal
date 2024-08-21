@@ -15,7 +15,7 @@
   "engines": {
     "node": ">=20"
   },
-  "packageManager": "pnpm@8.6.10",
+  "packageManager": "pnpm@9.1.4",
   "devDependencies": {
     "dotenv-cli": "^7.3.0",
     "prettier-plugin-tailwindcss": "^0.5.14",
