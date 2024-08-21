@@ -12,7 +12,7 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const UserScalarFieldEnumSchema = z.enum(['id','email','emailVerified','role','name','avatarUrl','createdAt','hashedPassword','onboardingComplete']);
+export const UserScalarFieldEnumSchema = z.enum(['id','email','emailVerified','role','name','avatarUrl','createdAt','hashedPassword','onboardingComplete','phoneNumber']);
 
 export const UserSessionScalarFieldEnumSchema = z.enum(['id','userId','expiresAt','impersonatorId']);
 
@@ -21,6 +21,8 @@ export const UserOauthAccountScalarFieldEnumSchema = z.enum(['id','providerId','
 export const UserVerificationTokenScalarFieldEnumSchema = z.enum(['id','userId','token','expires']);
 
 export const UserOneTimePasswordScalarFieldEnumSchema = z.enum(['id','userId','code','type','identifier','expires']);
+
+export const CTAScalarFieldEnumSchema = z.enum(['id','title','description','isActive','createdAt','updatedAt','userId']);
 
 export const SubscriptionScalarFieldEnumSchema = z.enum(['id','userId','customerId','status','planId','variantId','nextPaymentDate']);
 
@@ -60,6 +62,7 @@ export const UserSchema = z.object({
   createdAt: z.coerce.date(),
   hashedPassword: z.string().nullable(),
   onboardingComplete: z.boolean(),
+  phoneNumber: z.string(),
 })
 
 export type User = z.infer<typeof UserSchema>
@@ -117,6 +120,22 @@ export const UserOneTimePasswordSchema = z.object({
 })
 
 export type UserOneTimePassword = z.infer<typeof UserOneTimePasswordSchema>
+
+/////////////////////////////////////////
+// CTA SCHEMA
+/////////////////////////////////////////
+
+export const CTASchema = z.object({
+  id: z.string().cuid(),
+  title: z.string(),
+  description: z.string(),
+  isActive: z.boolean(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  userId: z.string(),
+})
+
+export type CTA = z.infer<typeof CTASchema>
 
 /////////////////////////////////////////
 // SUBSCRIPTION SCHEMA

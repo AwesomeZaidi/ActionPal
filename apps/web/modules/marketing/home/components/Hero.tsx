@@ -1,8 +1,17 @@
 import { Link } from "@i18n";
+import { apiClient } from "@shared/lib/api-client";
 import { Button } from "@ui/components/button";
 import { ArrowRightIcon } from "lucide-react";
 
 export function Hero() {
+
+  // You can't do this in markting or screens I THINK - it will throw an error
+  // But from a module imported from (saas) i believe it would work.
+  const {
+    data
+  } = apiClient.cta.getActiveCTAs.useQuery()
+  console.log('activeCTAs:', data)
+
   return (
     <nav className="to-primary/5 border-b bg-gradient-to-b from-transparent pb-20 pt-8">
       <div className="container text-center">

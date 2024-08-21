@@ -1,11 +1,13 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("MIGRATION_DATABASE_URL")
+  schemas   = ["public", "luciaoauth"]
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 generator zod {
@@ -19,23 +21,27 @@ generator zod {
 enum UserRole {
   USER
   ADMIN
+  @@schema("luciaoauth")
 }
 
 model User {
-  id                 String                  @id @default(cuid())
-  email              String                  @unique
-  emailVerified      Boolean                 @default(false)
-  role               UserRole                @default(USER)
+  id                 String           @id @default(cuid())
+  email              String           @unique
+  emailVerified      Boolean          @default(false)
+  role               UserRole         @default(USER)
   name               String?
   avatarUrl          String?
-  createdAt          DateTime                @default(now())
+  createdAt          DateTime         @default(now())
   hashedPassword     String?
-  onboardingComplete Boolean                 @default(false)
+  onboardingComplete Boolean          @default(false)
   oauthAccounts      UserOauthAccount[]
   sessions           UserSession[]
-  verificationtokens UserVerificationToken[]
+  verificationTokens UserVerificationToken[]
   oneTimePasswords   UserOneTimePassword[]
-  Subscription       Subscription?
+  subscription       Subscription?
+  phoneNumber        String           @unique
+  ctasCompleted      CTA[]
+  @@schema("luciaoauth")
 }
 
 model UserSession {
@@ -46,6 +52,7 @@ model UserSession {
   user           User     @relation(references: [id], fields: [userId], onDelete: Cascade)
 
   @@index([userId])
+  @@schema("luciaoauth")
 }
 
 model UserOauthAccount {
@@ -56,6 +63,7 @@ model UserOauthAccount {
   user           User   @relation(references: [id], fields: [userId], onDelete: Cascade)
 
   @@unique([providerId, providerUserId])
+  @@schema("luciaoauth")
 }
 
 model UserVerificationToken {
@@ -66,12 +74,14 @@ model UserVerificationToken {
   expires DateTime
 
   @@index([userId])
+  @@schema("luciaoauth")
 }
 
 enum UserOneTimePasswordType {
   SIGNUP
   LOGIN
   PASSWORD_RESET
+  @@schema("luciaoauth")
 }
 
 model UserOneTimePassword {
@@ -84,6 +94,19 @@ model UserOneTimePassword {
   expires    DateTime
 
   @@index([userId])
+  @@schema("luciaoauth")
+}
+
+model CTA {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  isActive    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  @@schema("luciaoauth")
 }
 
 enum SubscriptionStatus {
@@ -95,6 +118,7 @@ enum SubscriptionStatus {
   UNPAID
   INCOMPLETE
   EXPIRED
+  @@schema("luciaoauth")
 }
 
 model Subscription {
@@ -106,4 +130,5 @@ model Subscription {
   planId          String
   variantId       String
   nextPaymentDate DateTime?
+  @@schema("luciaoauth")
 }
