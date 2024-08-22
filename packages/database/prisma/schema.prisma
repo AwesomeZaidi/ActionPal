@@ -1,7 +1,7 @@
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("MIGRATION_DATABASE_URL")
+  url       = "postgres://postgres.hautqafomiilmfycexot:ActionPal1234!@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+  directUrl = "postgres://postgres.hautqafomiilmfycexot:ActionPal1234!@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
   schemas   = ["public", "luciaoauth"]
 }
 
@@ -27,8 +27,8 @@ enum UserRole {
 
 model User {
   id                 String                  @id @default(cuid())
-  email              String                  @unique
-  emailVerified      Boolean                 @default(false)
+  phone              String?                 @unique // Temporarily optional if needed
+  phoneVerified      Boolean                 @default(false)
   role               UserRole                @default(USER)
   name               String?
   avatarUrl          String?
@@ -40,7 +40,6 @@ model User {
   verificationTokens UserVerificationToken[]
   oneTimePasswords   UserOneTimePassword[]
   subscription       Subscription?
-  phoneNumber        String?
   ctasCompleted      CTA[]
 
   @@schema("luciaoauth")

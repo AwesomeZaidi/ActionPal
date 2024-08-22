@@ -8,7 +8,8 @@ export const user = publicProcedure
   .output(
     UserSchema.pick({
       id: true,
-      email: true,
+      phone: true,
+      phoneVerified: true,
       role: true,
       avatarUrl: true,
       name: true,
@@ -27,21 +28,36 @@ export const user = publicProcedure
       return null;
     }
 
+    const userRecord = await db.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        phone: true,
+        phoneVerified: true,
+        role: true,
+        avatarUrl: true,
+        name: true,
+        onboardingComplete: true,
+      },
+    });
+
+    if (!userRecord) return null;
+
     const impersonatedBy = session?.impersonatorId
       ? await db.user.findUnique({
-          where: {
-            id: session.impersonatorId,
-          },
-          select: {
-            id: true,
-            name: true,
-          },
-        })
+        where: {
+          id: session.impersonatorId,
+        },
+        select: {
+          id: true,
+          name: true,
+        },
+      })
       : undefined;
 
     return {
-      ...user,
-      avatarUrl: await getUserAvatarUrl(user.avatarUrl),
-      impersonatedBy,
+      ...userRecord,
+      avatarUrl: await getUserAvatarUrl(userRecord.avatarUrl),
+      impersonatedBy: impersonatedBy || null,
     };
   });

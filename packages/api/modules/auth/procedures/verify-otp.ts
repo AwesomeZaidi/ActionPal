@@ -8,16 +8,16 @@ export const verifyOtp = publicProcedure
   .input(
     z.object({
       type: UserOneTimePasswordTypeSchema,
-      identifier: z.string(),
+      identifier: z.string(),  // Phone number becomes the identifier
       code: z.string(),
-    }),
+    })
   )
   .mutation(
     async ({ input: { type, identifier, code }, ctx: { responseHeaders } }) => {
       try {
         const userId = await validateOneTimePassword({
           type,
-          identifier,
+          identifier,  // Phone number as the identifier
           code,
         });
 
@@ -33,11 +33,11 @@ export const verifyOtp = publicProcedure
           });
         }
 
-        if (!user.emailVerified) {
+        if (!user.phoneVerified) {
           await db.user.update({
             where: { id: user.id },
             data: {
-              emailVerified: true,
+              phoneVerified: true,
             },
           });
         }

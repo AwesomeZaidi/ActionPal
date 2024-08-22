@@ -74,7 +74,7 @@ export function LoginForm() {
     setServerError(null);
     try {
       if (!isOtpSent) {
-        await sendOtpMutation.mutateAsync({ phone });
+        await sendOtpMutation.mutateAsync({ phone, type: "LOGIN" });
         setOtpSent(true);
       } else {
         await verifyOtpMutation.mutateAsync({ phone, otp: otp! });

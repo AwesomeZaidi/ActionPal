@@ -297,6 +297,9 @@ importers:
       superjson:
         specifier: ^2.2.1
         version: 2.2.1
+      twilio:
+        specifier: ^5.2.2
+        version: 5.2.2
       utils:
         specifier: workspace:*
         version: link:../utils
@@ -346,6 +349,9 @@ importers:
       oslo:
         specifier: ^1.2.0
         version: 1.2.0
+      twilio:
+        specifier: ^5.2.2
+        version: 5.2.2
       utils:
         specifier: workspace:*
         version: link:../utils
@@ -478,6 +484,10 @@ importers:
         version: link:../../tooling/typescript
 
   packages/utils:
+    dependencies:
+      twilio:
+        specifier: ^5.2.2
+        version: 5.2.2
     devDependencies:
       '@types/node':
         specifier: ^20.12.7

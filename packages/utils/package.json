@@ -17,5 +17,8 @@
     "extends": [
       "eslint-config-custom/base"
     ]
+  },
+  "dependencies": {
+    "twilio": "^5.2.2"
   }
 }

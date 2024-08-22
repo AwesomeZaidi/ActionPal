@@ -10,7 +10,7 @@ export const revalidate = 0;
 
 export default async function Layout({ children }: PropsWithChildren) {
   const apiCaller = await createApiCaller();
-  const user = await apiCaller.auth.user();
+  const user = await apiCaller.auth.user()
 
   if (!user) {
     return redirect("/auth/login");

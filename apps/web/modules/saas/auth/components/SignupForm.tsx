@@ -51,17 +51,21 @@ export function SignupForm() {
     if (phone) {
       form.setValue("phone", phone);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-line react-hooks/exhaustive-deps
   }, [phone]);
 
   const onSubmit: SubmitHandler<FormValues> = async ({ phone, otp }) => {
     setServerError(null);
     try {
       if (!isOtpSent) {
-        await sendOtpMutation.mutateAsync({ phone });
+        await sendOtpMutation.mutateAsync({ phone, type: "SIGNUP" });
         setOtpSent(true);
       } else {
-        await verifyOtpMutation.mutateAsync({ phone, otp: otp! });
+        await verifyOtpMutation.mutateAsync({
+          identifier: phone, // Changed from "phone" to "identifier"
+          code: otp!,        // Changed from "otp" to "code"
+          type: "SIGNUP",    // Explicitly set the type to "SIGNUP"
+        });
         router.replace(redirectTo);
       }
     } catch (e) {
@@ -113,7 +117,7 @@ export function SignupForm() {
               name="otp"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("auth.signup.otp")}</FormLabel>
+                  <FormLabel>One Time Passcode</FormLabel>
                   <FormControl>
                     <Input {...field} autoComplete="one-time-code" />
                   </FormControl>

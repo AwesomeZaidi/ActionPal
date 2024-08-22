@@ -12,7 +12,7 @@ import type { Prisma } from '@prisma/client';
 
 export const TransactionIsolationLevelSchema = z.enum(['ReadUncommitted','ReadCommitted','RepeatableRead','Serializable']);
 
-export const UserScalarFieldEnumSchema = z.enum(['id','email','emailVerified','role','name','avatarUrl','createdAt','hashedPassword','onboardingComplete','phoneNumber']);
+export const UserScalarFieldEnumSchema = z.enum(['id','phone','phoneVerified','role','name','avatarUrl','createdAt','hashedPassword','onboardingComplete']);
 
 export const UserSessionScalarFieldEnumSchema = z.enum(['id','userId','expiresAt','impersonatorId']);
 
@@ -55,14 +55,13 @@ export type SubscriptionStatusType = `${z.infer<typeof SubscriptionStatusSchema>
 export const UserSchema = z.object({
   role: UserRoleSchema,
   id: z.string().cuid(),
-  email: z.string(),
-  emailVerified: z.boolean(),
+  phone: z.string().nullable(),
+  phoneVerified: z.boolean(),
   name: z.string().nullable(),
   avatarUrl: z.string().nullable(),
   createdAt: z.coerce.date(),
   hashedPassword: z.string().nullable(),
   onboardingComplete: z.boolean(),
-  phoneNumber: z.string().nullable(),
 })
 
 export type User = z.infer<typeof UserSchema>
