@@ -12,7 +12,7 @@
     "superjson": "^2.2.1",
     "twilio": "^5.2.2",
     "utils": "workspace:*",
-    "zod": "^3.22.5"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/react": "18.2.79",
