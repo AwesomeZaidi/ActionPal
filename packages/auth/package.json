@@ -5,7 +5,7 @@
     "database": "workspace:*",
     "lucia": "^3.0.1",
     "mail": "workspace:*",
-    "next": "14.2.2",
+    "next": "14.2.6",
     "oslo": "^1.2.0",
     "twilio": "^5.2.2",
     "utils": "workspace:*",
