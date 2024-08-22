@@ -21,26 +21,28 @@ generator zod {
 enum UserRole {
   USER
   ADMIN
+
   @@schema("luciaoauth")
 }
 
 model User {
-  id                 String           @id @default(cuid())
-  email              String           @unique
-  emailVerified      Boolean          @default(false)
-  role               UserRole         @default(USER)
+  id                 String                  @id @default(cuid())
+  email              String                  @unique
+  emailVerified      Boolean                 @default(false)
+  role               UserRole                @default(USER)
   name               String?
   avatarUrl          String?
-  createdAt          DateTime         @default(now())
+  createdAt          DateTime                @default(now())
   hashedPassword     String?
-  onboardingComplete Boolean          @default(false)
+  onboardingComplete Boolean                 @default(false)
   oauthAccounts      UserOauthAccount[]
   sessions           UserSession[]
   verificationTokens UserVerificationToken[]
   oneTimePasswords   UserOneTimePassword[]
   subscription       Subscription?
-  phoneNumber        String           @unique
+  phoneNumber        String?
   ctasCompleted      CTA[]
+
   @@schema("luciaoauth")
 }
 
@@ -81,6 +83,7 @@ enum UserOneTimePasswordType {
   SIGNUP
   LOGIN
   PASSWORD_RESET
+
   @@schema("luciaoauth")
 }
 
@@ -106,6 +109,7 @@ model CTA {
   updatedAt   DateTime @updatedAt
   userId      String
   user        User     @relation(fields: [userId], references: [id])
+
   @@schema("luciaoauth")
 }
 
@@ -118,6 +122,7 @@ enum SubscriptionStatus {
   UNPAID
   INCOMPLETE
   EXPIRED
+
   @@schema("luciaoauth")
 }
 
@@ -130,5 +135,6 @@ model Subscription {
   planId          String
   variantId       String
   nextPaymentDate DateTime?
+
   @@schema("luciaoauth")
 }

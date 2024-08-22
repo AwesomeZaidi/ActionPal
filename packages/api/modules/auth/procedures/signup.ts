@@ -20,6 +20,7 @@ export const signup = publicProcedure
     }),
   )
   .mutation(async ({ input: { email, password, callbackUrl } }) => {
+    console.log('email;', email)
     try {
       const hashedPassword = await hashPassword(password);
       const user = await db.user.create({
@@ -27,8 +28,10 @@ export const signup = publicProcedure
           email,
           role: UserRoleSchema.Values.USER,
           hashedPassword,
+          phoneNumber: ''
         },
       });
+      console.log('created user:', user)
 
       const token = await generateVerificationToken({
         userId: user.id,

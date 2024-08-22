@@ -3,6 +3,7 @@ import { PageHeader } from "@saas/shared/components/PageHeader";
 import { Card } from "@ui/components/card";
 import { createApiCaller } from "api/trpc/caller";
 import { getTranslations } from "next-intl/server";
+
 export default async function Dashboard() {
   const apiCaller = await createApiCaller();
   const user = await apiCaller.auth.user();

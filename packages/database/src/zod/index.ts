@@ -62,7 +62,7 @@ export const UserSchema = z.object({
   createdAt: z.coerce.date(),
   hashedPassword: z.string().nullable(),
   onboardingComplete: z.boolean(),
-  phoneNumber: z.string(),
+  phoneNumber: z.string().nullable(),
 })
 
 export type User = z.infer<typeof UserSchema>

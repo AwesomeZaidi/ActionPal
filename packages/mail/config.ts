@@ -1,3 +1,6 @@
 export const config = {
-  from: "contact@supastarter.dev",
+  from: "team@actionpal.co",
+  mailing: {
+    provider: "resend",
+  },
 };

@@ -1,38 +1,63 @@
 import { Link } from "@i18n";
-import { apiClient } from "@shared/lib/api-client";
 import { Button } from "@ui/components/button";
+import { createApiCaller } from "api/trpc/caller";
 import { ArrowRightIcon } from "lucide-react";
 
-export function Hero() {
+export async function Hero() {
 
-  // You can't do this in markting or screens I THINK - it will throw an error
-  // But from a module imported from (saas) i believe it would work.
-  const {
-    data
-  } = apiClient.cta.getActiveCTAs.useQuery()
-  console.log('activeCTAs:', data)
+  const apiCaller = await createApiCaller()
+
+  const activeCTAs = await apiCaller.cta.getActiveCTAs()
+  console.log('activeCTAs:', activeCTAs)
+  console.log('hi')
 
   return (
-    <nav className="to-primary/5 border-b bg-gradient-to-b from-transparent pb-20 pt-8">
+    <nav className="to-primary/5 from-transparent pb-20 pt-8">
       <div className="container text-center">
-        <h1 className="mx-auto max-w-3xl text-5xl font-bold lg:text-7xl">
-          Your revolutionary <span className="text-primary">Next.js</span> SaaS
+        <h1 className="mx-auto max-w-3xl text-5xl font-bold lg:text-7xl mt-4">
+          Action <span className="text-primary">Pal</span>
         </h1>
 
         <p className="mt-4 text-lg opacity-75">
-          This is a demo application built with supastarter. <br />
-          It will save you a lot of time and effort building your next SaaS.
+          Collective action meets momentum.
+        </p>
+        <p className="mt-4 text-lg opacity-75">
+          74 Actions were taken through our app ❤️
         </p>
 
+        {/* <p className="mt-4 text-md opacity-75">
+          IT TAKES A VILLAGE
+        </p> */}
+
         <div className="mt-6 flex flex-col items-center justify-center gap-3 md:flex-row">
-          <Button size="lg" asChild>
+          <Button variant="outline" size="lg" asChild>
             <Link href="/auth/login">
-              Get started
+              Get Notified
               <ArrowRightIcon className="ml-2 size-4" />
             </Link>
           </Button>
-          <Button variant="outline" size="lg" asChild>
+
+          {/* <Button variant="outline" size="lg" asChild>
             <Link href="/docs">Documentation</Link>
+          </Button> */}
+        </div>
+        <div className="p-4 bg-gray-900 border border-gray-700 rounded-md mt-10">
+          <div>
+            <div className="text-gray-400 text-sm">
+              <span className="font-bold text-white">18</span> / 52<span className="font-semibold text-white">{' '}People</span> on our app
+            </div>
+            <div className="text-gray-400 text-sm">
+              took <span className="font-semibold text-white">action</span> this week
+            </div>
+          </div>
+          <div className="my-4 text-base font-semibold">
+            🚨 NEW WAY TO HELP UNLOCKED.
+          </div>
+          <Button size="lg" asChild>
+            <Link href="/auth/login">
+              TAP TO ACT
+              <ArrowRightIcon className="ml-2 size-4" />
+            </Link>
           </Button>
         </div>
 
