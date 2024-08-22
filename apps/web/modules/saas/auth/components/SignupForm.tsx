@@ -8,18 +8,12 @@ import { Button } from "@ui/components/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
 } from "@ui/components/form";
 import { Input } from "@ui/components/input";
-import {
-  AlertTriangleIcon,
-  ArrowRightIcon,
-  EyeIcon,
-  EyeOffIcon,
-} from "lucide-react";
+import { AlertTriangleIcon, ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -28,8 +22,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
+  phone: z.string().min(10, "Invalid phone number").max(15, "Invalid phone number"),
+  otp: z.optional(z.string().min(6).max(6, "Invalid OTP")),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -44,38 +38,32 @@ export function SignupForm() {
     title: string;
     message: string;
   }>(null);
-  const [showPassword, setShowPassword] = useState(false);
+  const [isOtpSent, setOtpSent] = useState(false);
   const searchParams = useSearchParams();
 
-  const signupMutation = apiClient.auth.signup.useMutation();
+  const sendOtpMutation = apiClient.auth.sendOtp.useMutation();
+  const verifyOtpMutation = apiClient.auth.verifyOtp.useMutation();
 
   const redirectTo = searchParams.get("redirectTo") ?? "/app";
-  const email = searchParams.get("email");
+  const phone = searchParams.get("phone");
 
   useEffect(() => {
-    if (email) {
-      form.setValue("email", email);
+    if (phone) {
+      form.setValue("phone", phone);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email]);
+  }, [phone]);
 
-  const onSubmit: SubmitHandler<FormValues> = async ({ email, password }) => {
+  const onSubmit: SubmitHandler<FormValues> = async ({ phone, otp }) => {
     setServerError(null);
     try {
-      await signupMutation.mutateAsync({
-        email,
-        password,
-        callbackUrl: new URL("/auth/verify", window.location.origin).toString(),
-      });
-
-      const redirectSearchParams = new URLSearchParams();
-      redirectSearchParams.set("type", "SIGNUP");
-      redirectSearchParams.set("redirectTo", redirectTo);
-      if (email) {
-        redirectSearchParams.set("identifier", email);
+      if (!isOtpSent) {
+        await sendOtpMutation.mutateAsync({ phone });
+        setOtpSent(true);
+      } else {
+        await verifyOtpMutation.mutateAsync({ phone, otp: otp! });
+        router.replace(redirectTo);
       }
-
-      router.replace(`/auth/otp?${redirectSearchParams.toString()}`);
     } catch (e) {
       setServerError({
         title: t("auth.signup.hints.signupFailed.title"),
@@ -108,63 +96,41 @@ export function SignupForm() {
 
           <FormField
             control={form.control}
-            name="email"
+            name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("auth.signup.email")}</FormLabel>
+                <FormLabel>Sign up with Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} autoComplete="email" />
+                  <Input {...field} autoComplete="tel" />
                 </FormControl>
               </FormItem>
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t("auth.signup.password")}</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? "text" : "password"}
-                      className="pr-10"
-                      {...field}
-                      required
-                      autoComplete="new-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="text-primary absolute inset-y-0 right-0 flex items-center pr-4 text-xl"
-                    >
-                      {showPassword ? (
-                        <EyeOffIcon className="size-4" />
-                      ) : (
-                        <EyeIcon className="size-4" />
-                      )}
-                    </button>
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  {t("auth.signup.passwordHint")}
-                </FormDescription>
-              </FormItem>
-            )}
-          />
+          {isOtpSent && (
+            <FormField
+              control={form.control}
+              name="otp"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("auth.signup.otp")}</FormLabel>
+                  <FormControl>
+                    <Input {...field} autoComplete="one-time-code" />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          )}
 
           <Button loading={form.formState.isSubmitting}>
-            {t("auth.signup.submit")}
+            {isOtpSent ? t("auth.signup.verifyOtp") : 'Send Code'}
           </Button>
 
           <div>
             <span className="text-muted-foreground">
               {t("auth.signup.alreadyHaveAccount")}{" "}
             </span>
-            <Link
-              href={`/auth/login`}
-            >
+            <Link href={`/auth/login`}>
               {t("auth.signup.signIn")}
               <ArrowRightIcon className="ml-1 inline size-4 align-middle" />
             </Link>

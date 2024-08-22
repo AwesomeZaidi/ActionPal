@@ -6,10 +6,24 @@ import { ArrowRightIcon } from "lucide-react";
 export async function Hero() {
 
   const apiCaller = await createApiCaller()
+  const user = await apiCaller.auth.user();
 
   const activeCTAs = await apiCaller.cta.getActiveCTAs()
   console.log('activeCTAs:', activeCTAs)
   console.log('hi')
+
+  const cta = activeCTAs[0]
+  // If !user
+  // && !cta
+  // show welcome message instead of cta box
+  // If cta
+  // Show CTA Box
+  // Allow user to open it (open action card ui -> pass in cta - snip this comp inline is fine.)
+  // Show user phone number input to trigger phone number auth flow with twilio/supabase
+
+  // if CTA and user.completedCTA's has the ID of it
+  // show thanks for completing
+  // if not, show take action button and action card -> pass in CTA
 
   return (
     <nav className="to-primary/5 from-transparent pb-20 pt-8">

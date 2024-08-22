@@ -1,6 +1,5 @@
 "use client";
 
-import { appConfig } from "@config";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@i18n";
 import { apiClient } from "@shared/lib/api-client";
@@ -9,18 +8,12 @@ import { Button } from "@ui/components/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
 } from "@ui/components/form";
 import { Input } from "@ui/components/input";
-import {
-  AlertTriangleIcon,
-  ArrowRightIcon,
-  EyeIcon,
-  EyeOffIcon,
-} from "lucide-react";
+import { AlertTriangleIcon, ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -28,12 +21,10 @@ import type { SubmitHandler } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useUser } from "../hooks/use-user";
-import SigninModeSwitch from "./SigninModeSwitch";
-import { SocialSigninButton } from "./SocialSigninButton";
 
 const formSchema = z.object({
-  email: z.string().email(),
-  password: z.optional(z.string()),
+  phone: z.string().min(10, "Invalid phone number").max(15, "Invalid phone number"),
+  otp: z.optional(z.string().min(6).max(6, "Invalid OTP")),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -42,41 +33,36 @@ export function LoginForm() {
   const t = useTranslations();
   const router = useRouter();
   const { user, loaded } = useUser();
-  const [signinMode, setSigninMode] = useState<"password" | "magic-link">(
-    "magic-link",
-  );
+  const [isOtpSent, setOtpSent] = useState(false);
   const [serverError, setServerError] = useState<null | {
     title: string;
     message: string;
   }>(null);
-  const [showPassword, setShowPassword] = useState(false);
   const searchParams = useSearchParams();
 
-  const loginWithPasswordMutation =
-    apiClient.auth.loginWithPassword.useMutation();
-  const loginWithEmailMutation = apiClient.auth.loginWithEmail.useMutation();
+  const sendOtpMutation = apiClient.auth.sendOtp.useMutation();
+  const verifyOtpMutation = apiClient.auth.verifyOtp.useMutation();
 
   const form = useForm<FormValues>({ resolver: zodResolver(formSchema) });
 
   const redirectTo = searchParams.get("redirectTo") ?? "/app";
-  const email = searchParams.get("email");
+  const phone = searchParams.get("phone");
 
   useEffect(() => {
-    if (email) {
-      form.setValue("email", email);
+    if (phone) {
+      form.setValue("phone", phone);
     }
-  }, [email]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [phone]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     form.reset();
     setServerError(null);
-  }, [signinMode]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOtpSent]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleRedirect = () => {
     router.replace(redirectTo);
   };
 
-  // redirect when user has been loaded
   useEffect(() => {
     if (user && loaded) {
       handleRedirect();
@@ -84,32 +70,15 @@ export function LoginForm() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, loaded]);
 
-  const onSubmit: SubmitHandler<FormValues> = async ({ email, password }) => {
+  const onSubmit: SubmitHandler<FormValues> = async ({ phone, otp }) => {
     setServerError(null);
     try {
-      if (signinMode === "password") {
-        await loginWithPasswordMutation.mutateAsync({
-          email,
-          password: password!,
-        });
-
-        handleRedirect();
+      if (!isOtpSent) {
+        await sendOtpMutation.mutateAsync({ phone });
+        setOtpSent(true);
       } else {
-        await loginWithEmailMutation.mutateAsync({
-          email,
-          callbackUrl: new URL(
-            "/auth/verify",
-            window.location.origin,
-          ).toString(),
-        });
-
-        const redirectSearchParams = new URLSearchParams();
-        redirectSearchParams.set("type", "LOGIN");
-        redirectSearchParams.set("redirectTo", redirectTo);
-        if (email) {
-          redirectSearchParams.set("identifier", email);
-        }
-        router.replace(`/auth/otp?${redirectSearchParams.toString()}`);
+        await verifyOtpMutation.mutateAsync({ phone, otp: otp! });
+        handleRedirect();
       }
     } catch (e) {
       setServerError({
@@ -128,21 +97,8 @@ export function LoginForm() {
         {t("auth.login.subtitle")}
       </p>
 
-      <div className="flex flex-col items-stretch gap-3">
-        {appConfig.auth.oAuthProviders.map((providerId) => (
-          <SocialSigninButton key={providerId} provider={providerId} />
-        ))}
-      </div>
-
-      <hr className=" my-8" />
-
       <Form {...form}>
         <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-          <SigninModeSwitch
-            className="w-full"
-            activeMode={signinMode}
-            onChange={(value) => setSigninMode(value as typeof signinMode)}
-          />
           {form.formState.isSubmitted && serverError && (
             <Alert variant="error">
               <AlertTriangleIcon className="size-4" />
@@ -153,50 +109,27 @@ export function LoginForm() {
 
           <FormField
             control={form.control}
-            name="email"
+            name="phone"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t("auth.signup.email")}</FormLabel>
+                <FormLabel>Sign up with Phone Number</FormLabel>
                 <FormControl>
-                  <Input {...field} autoComplete="email" />
+                  <Input {...field} autoComplete="tel" />
                 </FormControl>
               </FormItem>
             )}
           />
 
-          {signinMode === "password" && (
+          {isOtpSent && (
             <FormField
               control={form.control}
-              name="password"
+              name="otp"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("auth.signup.password")}</FormLabel>
+                  <FormLabel>{t("auth.signup.otp")}</FormLabel>
                   <FormControl>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        className="pr-10"
-                        {...field}
-                        autoComplete="current-password"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="text-primary absolute inset-y-0 right-0 flex items-center pr-4 text-xl"
-                      >
-                        {showPassword ? (
-                          <EyeOffIcon className="size-4" />
-                        ) : (
-                          <EyeIcon className="size-4" />
-                        )}
-                      </button>
-                    </div>
+                    <Input {...field} autoComplete="one-time-code" />
                   </FormControl>
-                  <FormDescription className="text-right">
-                    <Link href="/auth/forgot-password">
-                      {t("auth.login.forgotPassword")}
-                    </Link>
-                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -207,18 +140,14 @@ export function LoginForm() {
             type="submit"
             loading={form.formState.isSubmitting}
           >
-            {signinMode === "password"
-              ? t("auth.login.submit")
-              : t("auth.login.sendMagicLink")}
+            {isOtpSent ? t("auth.login.submit") : 'Send OTP'}
           </Button>
 
           <div>
             <span className="text-muted-foreground">
               {t("auth.login.dontHaveAnAccount")}{" "}
             </span>
-            <Link
-              href={`/auth/signup`}
-            >
+            <Link href={`/auth/signup`}>
               {t("auth.login.createAnAccount")}
               <ArrowRightIcon className="ml-1 inline size-4 align-middle" />
             </Link>
