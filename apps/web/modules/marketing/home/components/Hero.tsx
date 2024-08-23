@@ -9,7 +9,7 @@ export async function Hero() {
   const activeCTAs = await apiCaller.cta.getActiveCTAs();
   const cta = activeCTAs[0];
 
-  const completedCTAs = []
+  const completedCTAs: any[] = []
   // const completedCTAs = user.completedCTAs
 
   return (

@@ -1,10 +1,3 @@
-datasource db {
-  provider  = "postgresql"
-  url       = "postgres://postgres.hautqafomiilmfycexot:ActionPal1234!@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
-  directUrl = "postgres://postgres.hautqafomiilmfycexot:ActionPal1234!@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
-  schemas   = ["public", "luciaoauth"]
-}
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["multiSchema"]
@@ -13,21 +6,21 @@ generator client {
 generator zod {
   provider         = "zod-prisma-types"
   output           = "../src/zod"
-  createInputTypes = false
-  addIncludeType   = false
-  addSelectType    = false
+  createInputTypes = "false"
+  addSelectType    = "false"
+  addIncludeType   = "false"
 }
 
-enum UserRole {
-  USER
-  ADMIN
-
-  @@schema("luciaoauth")
+datasource db {
+  provider  = "postgresql"
+  url       = "postgres://postgres.hautqafomiilmfycexot:ActionPal1234!@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true&connection_limit=1"
+  directUrl = "postgres://postgres.hautqafomiilmfycexot:ActionPal1234!@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
+  schemas   = ["luciaoauth", "public"]
 }
 
 model User {
   id                 String                  @id @default(cuid())
-  phone              String?                 @unique // Temporarily optional if needed
+  phone              String?                 @unique
   phoneVerified      Boolean                 @default(false)
   role               UserRole                @default(USER)
   name               String?
@@ -35,12 +28,12 @@ model User {
   createdAt          DateTime                @default(now())
   hashedPassword     String?
   onboardingComplete Boolean                 @default(false)
+  ctasCompleted      CTA[]
+  subscription       Subscription?
   oauthAccounts      UserOauthAccount[]
+  oneTimePasswords   UserOneTimePassword[]
   sessions           UserSession[]
   verificationTokens UserVerificationToken[]
-  oneTimePasswords   UserOneTimePassword[]
-  subscription       Subscription?
-  ctasCompleted      CTA[]
 
   @@schema("luciaoauth")
 }
@@ -50,7 +43,7 @@ model UserSession {
   userId         String
   expiresAt      DateTime
   impersonatorId String?
-  user           User     @relation(references: [id], fields: [userId], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@schema("luciaoauth")
@@ -61,7 +54,7 @@ model UserOauthAccount {
   providerId     String
   providerUserId String
   userId         String
-  user           User   @relation(references: [id], fields: [userId], onDelete: Cascade)
+  user           User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([providerId, providerUserId])
   @@schema("luciaoauth")
@@ -70,30 +63,22 @@ model UserOauthAccount {
 model UserVerificationToken {
   id      String   @id @default(cuid())
   userId  String
-  user    User     @relation(references: [id], fields: [userId], onDelete: Cascade)
   token   String
   expires DateTime
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
-  @@schema("luciaoauth")
-}
-
-enum UserOneTimePasswordType {
-  SIGNUP
-  LOGIN
-  PASSWORD_RESET
-
   @@schema("luciaoauth")
 }
 
 model UserOneTimePassword {
   id         String                  @id @default(cuid())
   userId     String
-  user       User                    @relation(references: [id], fields: [userId], onDelete: Cascade)
   code       String
   type       UserOneTimePasswordType
   identifier String
   expires    DateTime
+  user       User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@schema("luciaoauth")
@@ -112,6 +97,34 @@ model CTA {
   @@schema("luciaoauth")
 }
 
+model Subscription {
+  id              String             @id
+  userId          String             @unique
+  customerId      String
+  status          SubscriptionStatus
+  planId          String
+  variantId       String
+  nextPaymentDate DateTime?
+  user            User               @relation(fields: [userId], references: [id])
+
+  @@schema("luciaoauth")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+
+  @@schema("luciaoauth")
+}
+
+enum UserOneTimePasswordType {
+  SIGNUP
+  LOGIN
+  PASSWORD_RESET
+
+  @@schema("luciaoauth")
+}
+
 enum SubscriptionStatus {
   TRIALING
   ACTIVE
@@ -121,19 +134,6 @@ enum SubscriptionStatus {
   UNPAID
   INCOMPLETE
   EXPIRED
-
-  @@schema("luciaoauth")
-}
-
-model Subscription {
-  id              String             @id
-  user            User               @relation(fields: [userId], references: [id])
-  userId          String             @unique
-  customerId      String
-  status          SubscriptionStatus
-  planId          String
-  variantId       String
-  nextPaymentDate DateTime?
 
   @@schema("luciaoauth")
 }
