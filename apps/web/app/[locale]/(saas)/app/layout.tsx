@@ -16,9 +16,9 @@ export default async function Layout({ children }: PropsWithChildren) {
     return redirect("/auth/login");
   }
 
-  if (!user.onboardingComplete) {
-    return redirect("/onboarding");
-  }
+  // if (!user.onboardingComplete) {
+  //   return redirect("/onboarding");
+  // }
 
   return (
     <UserContextProvider initialUser={user}>
