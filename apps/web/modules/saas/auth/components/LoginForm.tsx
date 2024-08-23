@@ -11,7 +11,7 @@ export function LoginForm() {
   const { user, loaded } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? "/app";
+  const redirectTo = searchParams.get("redirectTo") ?? "/";
 
   const handleOtpSent = (phone: string) => {
     setPhone(phone);
