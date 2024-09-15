@@ -1,6 +1,5 @@
 import { UserContextProvider } from "@saas/auth/lib/user-context";
 import { Footer } from "@saas/shared/components/Footer";
-import { NavBar } from "@saas/shared/components/NavBar";
 import { createApiCaller } from "api/trpc/caller";
 import { redirect } from "next/navigation";
 import type { PropsWithChildren } from "react";
@@ -23,8 +22,8 @@ export default async function Layout({ children }: PropsWithChildren) {
   return (
     <UserContextProvider initialUser={user}>
       <div className="bg-muted min-h-screen">
-        <NavBar user={user} />
-        <main className="bg-muted">{children}</main>
+        {/* <NavBar user={user} /> */}
+        {/* <main className="bg-muted">{children}</main> */}
         <Footer />
       </div>
     </UserContextProvider>

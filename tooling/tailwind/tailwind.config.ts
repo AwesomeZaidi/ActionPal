@@ -11,9 +11,9 @@ export const lightVariables = {
     border: "#e2e8f0",
     input: "#e2e8f0",
     ring: "#6a66c4",
-    background: "#ffffff",
-    foreground: "#020817",
-    primary: "#6a66c4",
+    background: "#ffffff",  // white background
+    foreground: "#020817",  // dark foreground text
+    primary: "#ef4444",
     "primary-foreground": "#ffffff",
     secondary: "#f1f5f9",
     "secondary-foreground": "#0f172a",
@@ -27,36 +27,37 @@ export const lightVariables = {
     "accent-foreground": "#0f172a",
     popover: "#ffffff",
     "popover-foreground": "#020817",
-    card: "#ffffff",
-    "card-foreground": "#020817",
+    card: "#ffffff",  // white card
+    "card-foreground": "#020817",  // dark card text
   },
 };
 
 export const darkVariables = {
   colors: {
     border: "#2f3e57",
-    input: "#1e293b",
-    ring: "#837fdf",
-    background: "#121924",
-    foreground: "#f8fafc",
-    primary: "#837fdf",
-    "primary-foreground": "#111",
-    secondary: "#1e293b",
+    input: "#FD9597",
+    ring: "#ef4444", // Red ring to match the theme
+    background: "#ef4444", // dark background
+    foreground: "#f8fafc", // light foreground text
+    primary: "#f8fafc",  // Red primary color to match the dark mode in the screenshots
+    "primary-foreground": "#ffffff",
+    secondary: "#FD9597",
     "secondary-foreground": "#f8fafc",
     destructive: "#ef4444",
     "destructive-foreground": "#ffffff",
     success: "#39a561",
     "success-foreground": "#f8fafc",
-    muted: "#020817",
+    muted: "#FD9597",
     "muted-foreground": "#94a3b8",
-    accent: "#1e293b",
+    accent: "#FD9597",
     "accent-foreground": "#f8fafc",
-    popover: "#121924",
+    popover: "#FD9597",
     "popover-foreground": "#f8fafc",
-    card: "#121924",
-    "card-foreground": "#f8fafc",
+    card: "#FD9597",  // dark card
+    "card-foreground": "#f8fafc",  // light card text
   },
 };
+
 
 export default {
   content: [],
@@ -70,6 +71,20 @@ export default {
       },
     },
     extend: {
+      backgroundImage: {
+        'card-dark': 'rgba(255, 255, 255, 0.1)',
+        'card-light': 'transparent',
+      },
+      borderColor: {
+        'card-light': 'rgba(255, 85, 85, 0.8)',
+      },
+      textColor: {
+        'card-dark': '#ffffff',
+        'card-light': '#020817',
+      },
+      backdropFilter: {
+        'card-dark': 'blur(10px)',
+      },
       boxShadow: {
         sm: "0 2px 8px 0 rgb(0, 0, 0, 0.025), 0 0 1px rgba(0,0,0,0.1)",
         DEFAULT: "0 4px 16px 0 rgb(0, 0, 0, 0.05), 0 0 1px rgba(0,0,0,0.1)",
@@ -77,6 +92,8 @@ export default {
         lg: "0 8px 32px 0 rgb(0, 0, 0, 0.1), 0 0 1px rgba(0,0,0,0.1)",
         xl: "0 12px 48px 0 rgb(0, 0, 0, 0.125), 0 0 1px rgba(0,0,0,0.1)",
         "2xl": "0 16px 64px 0 rgb(0, 0, 0, 0.15), 0 0 1px rgba(0,0,0,0.1)",
+        'card-dark': '0 4px 6px rgba(0, 0, 0, 0.1)',
+        'card-light': 'none',
       },
       borderRadius: {
         lg: `0.75rem`,

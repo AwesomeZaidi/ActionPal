@@ -5,12 +5,7 @@ import { UserMenu } from "@marketing/shared/components/UserMenu";
 import { Logo } from "@shared/components/Logo";
 import type { ApiOutput } from "api/trpc/router";
 import { UserRoleSchema } from "database";
-import {
-  GridIcon,
-  SettingsIcon,
-  UserCogIcon,
-  Wand2Icon
-} from "lucide-react";
+import { GridIcon, SettingsIcon, UserCogIcon, Wand2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import type { PropsWithChildren } from "react";

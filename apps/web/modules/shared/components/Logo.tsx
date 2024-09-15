@@ -32,7 +32,7 @@ export function Logo({
           fill="currentColor"
         />
       </svg>
-      {withLabel && <span className="ml-3 text-lg">acme</span>}
+      {withLabel && <span className="ml-3 text-lg">Action Pal</span>}
     </span>
   );
 }

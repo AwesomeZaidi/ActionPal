@@ -14,9 +14,9 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    absolute: "supastarter.nextjs - Application",
-    default: "supastarter.nextjs- Application",
-    template: "%s | supastarter.nextjs - Application",
+    absolute: "Action Pal",
+    default: "Action Pal",
+    template: "%s | Action Pal",
   },
 };
 

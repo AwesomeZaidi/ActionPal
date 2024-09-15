@@ -22,3 +22,46 @@
 pre.shiki {
   @apply mb-4 rounded-lg p-6;
 }
+
+.vertical-text {
+
+  writing-mode: tb-rl;
+  transform: rotate(-180deg);
+
+  margin: 0 0;
+
+}
+
+/* Bleed Red - could be cool to use somewhere. */
+/* .bg-card {
+  background: linear-gradient(135deg, rgba(255, 85, 85, 0.8), rgba(255, 0, 0, 0.8));
+  border-radius: 15px;
+  padding: 20px;
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+} */
+
+/*  */
+.bg-card-dark {
+  background: rgba(255, 255, 255, 0.1);
+  /* Slightly transparent white */
+  backdrop-filter: blur(10px);
+  /* Frosted glass effect */
+  border-radius: 15px;
+  padding: 20px;
+  color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* Soft shadow for depth */
+}
+
+.bg-card-light {
+  background: transparent;
+  border: 2px solid rgba(255, 85, 85, 0.8);
+  /* Red outline */
+  border-radius: 15px;
+  padding: 20px;
+  color: #020817;
+  /* Dark text */
+  box-shadow: none;
+  /* No shadow */
+}

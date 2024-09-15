@@ -92,7 +92,7 @@ export function NavBar() {
               href="/"
               className="block hover:no-underline active:no-underline"
             >
-              <Logo />
+              <Logo withLabel={false} />
             </Link>
           </div>
 
